@@ -4,3 +4,6 @@ Release/
 .metadata/
 Drivers/
 
+*.bak
+
+
