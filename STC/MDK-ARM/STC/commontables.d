@@ -1,0 +1,14 @@
+stc\commontables.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\DSP\Source\CommonTables\CommonTables.c
+stc\commontables.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\DSP\Source\CommonTables\arm_common_tables.c
+stc\commontables.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\DSP\Include\arm_math.h
+stc\commontables.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+stc\commontables.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+stc\commontables.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+stc\commontables.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+stc\commontables.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+stc\commontables.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\float.h
+stc\commontables.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h
+stc\commontables.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\DSP\Include\arm_common_tables.h
+stc\commontables.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\DSP\Source\CommonTables\arm_const_structs.c
+stc\commontables.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\DSP\Include\arm_const_structs.h
+stc\commontables.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\DSP\Source\CommonTables\arm_mve_tables.c

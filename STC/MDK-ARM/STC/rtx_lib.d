@@ -1,0 +1,10 @@
+stc\rtx_lib.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\RTOS2\RTX\Source\rtx_lib.c
+stc\rtx_lib.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+stc\rtx_lib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+stc\rtx_lib.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+stc\rtx_lib.o: .\RTE\CMSIS\RTX_Config.h
+stc\rtx_lib.o: .\RTE\_STC\RTE_Components.h
+stc\rtx_lib.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\RTOS2\RTX\Include\rtx_os.h
+stc\rtx_lib.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+stc\rtx_lib.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\RTOS2\Include\cmsis_os2.h
+stc\rtx_lib.o: C:\Users\hrach\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\RTOS2\RTX\Include\rtx_evr.h
