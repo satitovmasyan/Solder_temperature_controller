@@ -56,14 +56,40 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+void usr_lcd_init(void);
+void usr_lcd_write(uint8_t data, uint8_t reg_sel);
+
 
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define PERIOD 5000
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
-#define NSS_Pin GPIO_PIN_12
-#define NSS_GPIO_Port GPIOB
+#define lcd_rs_Pin GPIO_PIN_0
+#define lcd_rs_GPIO_Port GPIOB
+#define lcd_rw_Pin GPIO_PIN_1
+#define lcd_rw_GPIO_Port GPIOB
+#define lcd_d6_Pin GPIO_PIN_10
+#define lcd_d6_GPIO_Port GPIOB
+#define lcd_d7_Pin GPIO_PIN_11
+#define lcd_d7_GPIO_Port GPIOB
+#define SPI2_NSS_Pin GPIO_PIN_12
+#define SPI2_NSS_GPIO_Port GPIOB
+#define lcd_en_Pin GPIO_PIN_3
+#define lcd_en_GPIO_Port GPIOB
+#define lcd_d0_Pin GPIO_PIN_4
+#define lcd_d0_GPIO_Port GPIOB
+#define lcd_d1_Pin GPIO_PIN_5
+#define lcd_d1_GPIO_Port GPIOB
+#define lcd_d2_Pin GPIO_PIN_6
+#define lcd_d2_GPIO_Port GPIOB
+#define lcd_d3_Pin GPIO_PIN_7
+#define lcd_d3_GPIO_Port GPIOB
+#define lcd_d4_Pin GPIO_PIN_8
+#define lcd_d4_GPIO_Port GPIOB
+#define lcd_d5_Pin GPIO_PIN_9
+#define lcd_d5_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

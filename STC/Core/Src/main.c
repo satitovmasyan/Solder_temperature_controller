@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include  "arm_math.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,11 +32,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-uint8_t 	RxBuffer[16];
-uint16_t 	SPI2_rx;
-float     sensor_val;
-q31_t     conv_out;
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,11 +43,12 @@ q31_t     conv_out;
 SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
+uint8_t lcd_data;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,6 +57,7 @@ static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_SPI2_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -77,6 +74,7 @@ static void MX_SPI2_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -100,29 +98,23 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   MX_SPI2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+
+  // LCD Initialization
+  usr_lcd_init();
+  lcd_data = 0x01;
+  HAL_TIM_Base_Start_IT(&htim3);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	GPIOA->BSRR = 1 << 4;
-	SPI2->CR1 |= (uint16_t) 0X0001 << 6; 		// set SPE: SPI enable bit
-	SPI2->CR2 |= (uint16_t) 0X0001 << 6; 		// set RX buffer not empty interrupt enable
   while (1)
   {
-		HAL_Delay(500);
-		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 
-		HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin , GPIO_PIN_RESET);
-		SPI2->DR = (uint16_t) 0X0550;
-//		while((SPI2->SR & 0x0001) == 0x0000);
-//		SPI2_rx = (SPI2->DR) >> 3;
-
-		sensor_val = SPI2_rx/4.0;
-//		arm_float_to_q31( &sensor_val, &conv_out, 16);
-		HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin , GPIO_PIN_SET);
-
+	  HAL_Delay(50);
+	  //usr_lcd_init();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -191,7 +183,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -225,7 +217,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 0;
+  htim2.Init.Prescaler = 65535;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 65535;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -252,6 +244,54 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 2 */
   HAL_TIM_MspPostInit(&htim2);
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 7199;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = PERIOD;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = PERIOD/2;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
 
 }
 
@@ -307,7 +347,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(NSS_GPIO_Port, NSS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, lcd_rs_Pin|lcd_rw_Pin|lcd_d6_Pin|lcd_d7_Pin
+                          |SPI2_NSS_Pin|lcd_en_Pin|lcd_d0_Pin|lcd_d1_Pin
+                          |lcd_d2_Pin|lcd_d3_Pin|lcd_d4_Pin|lcd_d5_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
@@ -316,17 +358,105 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : NSS_Pin */
-  GPIO_InitStruct.Pin = NSS_Pin;
+  /*Configure GPIO pins : lcd_rs_Pin lcd_rw_Pin lcd_d6_Pin lcd_d7_Pin
+                           SPI2_NSS_Pin lcd_en_Pin lcd_d0_Pin lcd_d1_Pin
+                           lcd_d2_Pin lcd_d3_Pin lcd_d4_Pin lcd_d5_Pin */
+  GPIO_InitStruct.Pin = lcd_rs_Pin|lcd_rw_Pin|lcd_d6_Pin|lcd_d7_Pin
+                          |SPI2_NSS_Pin|lcd_en_Pin|lcd_d0_Pin|lcd_d1_Pin
+                          |lcd_d2_Pin|lcd_d3_Pin|lcd_d4_Pin|lcd_d5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(NSS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
 /* USER CODE BEGIN 4 */
+void usr_lcd_init(void)
+{
+	HAL_GPIO_WritePin(lcd_en_GPIO_Port, lcd_en_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(lcd_rw_GPIO_Port, lcd_rw_Pin, GPIO_PIN_RESET);
+	HAL_Delay(15);
+	usr_lcd_write((uint8_t) 0x30 , (uint8_t) 0x00);
+	HAL_Delay(5);
+	usr_lcd_write((uint8_t) 0x30 , (uint8_t) 0x00);
+	HAL_Delay(1);
+	usr_lcd_write((uint8_t) 0x30 , (uint8_t) 0x00);
+	HAL_Delay(1);
+	usr_lcd_write((uint8_t) 0x38 , (uint8_t) 0x00);
+	HAL_Delay(1);
+	usr_lcd_write((uint8_t) 0x08 , (uint8_t) 0x00);
+	HAL_Delay(1);
+	usr_lcd_write((uint8_t) 0x01 , (uint8_t) 0x00);
+	HAL_Delay(2);
+	usr_lcd_write((uint8_t) 0x02 , (uint8_t) 0x00);
+	HAL_Delay(1);
+	usr_lcd_write((uint8_t) 0x0F , (uint8_t) 0x00);
+	HAL_Delay(1);
 
+}
+
+void usr_lcd_write(uint8_t data, uint8_t reg_sel)
+{
+	char temp;
+	if (reg_sel) {
+		HAL_GPIO_WritePin(lcd_rs_GPIO_Port, lcd_rs_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(lcd_rs_GPIO_Port, lcd_rs_Pin, GPIO_PIN_RESET);
+	}
+	temp = data & (0x01 << 0);
+	if (temp){
+		HAL_GPIO_WritePin(lcd_d0_GPIO_Port, lcd_d0_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(lcd_d0_GPIO_Port, lcd_d0_Pin, GPIO_PIN_RESET);
+	}
+	temp = data & (0x01 << 1);
+	if (temp){
+		HAL_GPIO_WritePin(lcd_d1_GPIO_Port, lcd_d1_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(lcd_d1_GPIO_Port, lcd_d1_Pin, GPIO_PIN_RESET);
+	}
+	temp = data & (0x01 << 2);
+	if (temp){
+		HAL_GPIO_WritePin(lcd_d2_GPIO_Port, lcd_d2_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(lcd_d2_GPIO_Port, lcd_d2_Pin, GPIO_PIN_RESET);
+	}
+	temp = data & (0x01 << 3);
+	if (temp){
+		HAL_GPIO_WritePin(lcd_d3_GPIO_Port, lcd_d3_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(lcd_d3_GPIO_Port, lcd_d3_Pin, GPIO_PIN_RESET);
+	}
+	temp = data & (0x01 << 4);
+	if (temp){
+		HAL_GPIO_WritePin(lcd_d4_GPIO_Port, lcd_d4_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(lcd_d4_GPIO_Port, lcd_d4_Pin, GPIO_PIN_RESET);
+	}
+	temp = data & (0x01 << 5);
+	if (temp){
+		HAL_GPIO_WritePin(lcd_d5_GPIO_Port, lcd_d5_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(lcd_d5_GPIO_Port, lcd_d5_Pin, GPIO_PIN_RESET);
+	}
+	temp = data & (0x01 << 6);
+	if (temp){
+		HAL_GPIO_WritePin(lcd_d6_GPIO_Port, lcd_d6_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(lcd_d6_GPIO_Port, lcd_d6_Pin, GPIO_PIN_RESET);
+	}
+	temp = data & (0x01 << 7);
+	if (temp){
+		HAL_GPIO_WritePin(lcd_d7_GPIO_Port, lcd_d7_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(lcd_d7_GPIO_Port, lcd_d7_Pin, GPIO_PIN_RESET);
+	}
+	HAL_Delay(1);
+	HAL_GPIO_WritePin(lcd_en_GPIO_Port, lcd_en_Pin, GPIO_PIN_SET);
+	HAL_Delay(1);
+	HAL_GPIO_WritePin(lcd_en_GPIO_Port, lcd_en_Pin, GPIO_PIN_RESET);
+}
 /* USER CODE END 4 */
 
 /**
